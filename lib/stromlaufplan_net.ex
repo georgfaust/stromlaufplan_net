@@ -1,10 +1,10 @@
 defmodule StromlaufplanNet do
   @api_base_path "https://app.stromlaufplan.de/webapi"
-  @api_key Application.compile_env(:stromlaufplan_net, :api_key) || raise "Missing API key"
+  @api_key Application.compile_env(:stromlaufplan_net, :api_key) || raise("Missing API key")
 
   @headers [
     {"Content-Type", "application/json"},
-    {"Authorization", "Bearer #{@api_key}}"}
+    {"Authorization", "Bearer #{@api_key}"}
   ]
 
   def create_project(name, address, _created_by, initial_project_data) do
@@ -39,16 +39,18 @@ defmodule StromlaufplanNet do
         initial_project_data,
         paper_size \\ "A4"
       ) do
+    document_data = %{
+      projectName: name,
+      projectAddress: address,
+      lastChanged: last_changed,
+      createdBy: created_by,
+      reviewedBy: reviewed_by,
+      zeichnungsnummer: project_key
+    }
+
     payload =
       %{
-        documentData: %{
-          projectName: name,
-          projectAddress: address,
-          lastChanged: last_changed,
-          createdBy: created_by,
-          reviewedBy: reviewed_by,
-          zeichnungsnummer: project_key
-        },
+        documentData: document_data,
         treeNodes: initial_project_data.treeNodes,
         treeNodeDatas: initial_project_data.treeNodeDatas,
         paperSize: paper_size
